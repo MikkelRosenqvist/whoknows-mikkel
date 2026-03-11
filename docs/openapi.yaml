@@ -1,0 +1,195 @@
+openapi: 3.0.0
+
+info:
+  title: WhoKnows Search API
+  description: A search engine API built with Flask. Originally from 2009.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /:
+    get:
+      summary: Search page
+      description: Renders the search page with optional query results.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Search query string
+          schema:
+            type: string
+        - name: language
+          in: query
+          required: false
+          description: Language filter for search results
+          schema:
+            type: string
+            enum: [en, da]
+            default: en
+      responses:
+        "200":
+          description: HTML search page with results
+
+  /about:
+    get:
+      summary: About page
+      description: Displays the about page with team info.
+      responses:
+        "200":
+          description: HTML about page
+
+  /login:
+    get:
+      summary: Login page
+      description: Displays the login form. Redirects to search if already logged in.
+      responses:
+        "200":
+          description: HTML login page
+        "302":
+          description: Redirect to search if already authenticated
+
+  /register:
+    get:
+      summary: Registration page
+      description: Displays the registration form. Redirects to search if already logged in.
+      responses:
+        "200":
+          description: HTML registration page
+        "302":
+          description: Redirect to search if already authenticated
+
+  /api/search:
+    get:
+      summary: Search API
+      description: Returns search results as JSON.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Search query string
+          schema:
+            type: string
+        - name: language
+          in: query
+          required: false
+          description: Language filter
+          schema:
+            type: string
+            enum: [en, da]
+            default: en
+      responses:
+        "200":
+          description: JSON search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  search_results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Page"
+
+  /api/login:
+    post:
+      summary: Login
+      description: Authenticates a user and creates a session.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        "302":
+          description: Redirect to search on successful login
+        "200":
+          description: Login page re-rendered with error message
+
+  /api/register:
+    post:
+      summary: Register
+      description: Creates a new user account.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - password2
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                password2:
+                  type: string
+                  format: password
+                  description: Password confirmation
+      responses:
+        "302":
+          description: Redirect to login on successful registration
+        "200":
+          description: Registration page re-rendered with error message
+
+  /api/logout:
+    get:
+      summary: Logout
+      description: Logs out the current user and redirects to search.
+      responses:
+        "302":
+          description: Redirect to search page
+
+components:
+  schemas:
+    Page:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Python programming"
+        url:
+          type: string
+          example: "https://en.wikipedia.org/wiki/Python"
+        language:
+          type: string
+          enum: [en, da]
+        last_updated:
+          type: string
+          format: date-time
+        content:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          description: MD5 hashed password
