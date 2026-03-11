@@ -1,11 +1,10 @@
 .PHONY: init run test
 
 init:
-	PYTHONPATH=backend python2 -c "from app import init_db; init_db()"
+	cd backend && python3 -c "from app import app, init_db; app.app_context().push(); init_db()"
 
 run:
-	python2 ./backend/app.py
+	cd backend && python3 app.py
 
-test: 
-	PYTHONPATH=backend python2 ./backend/app_tests.py
-
+test:
+	cd backend && python3 -m pytest app_tests.py -v
