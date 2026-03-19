@@ -6,6 +6,10 @@ DevOps course — WhoKnows search engine
 
 A search engine application rewritten from a legacy Python 2 / Flask 0.5 codebase to modern Python 3 / Flask 3.x.
 
+## Live deployment
+
+The application is deployed at: **http://20.203.130.58**
+
 ## Changes from legacy version
 
 - Upgraded from Python 2 to Python 3
