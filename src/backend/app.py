@@ -1,12 +1,19 @@
 import os
 import sqlite3
-from datetime import datetime
-from contextlib import closing
-from functools import wraps
 
-from flask import Flask, request, session, url_for, redirect, render_template, g, flash, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from flask import (
+    Flask,
+    flash,
+    g,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv()
 
