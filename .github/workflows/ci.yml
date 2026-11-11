@@ -1,0 +1,43 @@
+
+name: WhoKnows CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality-and-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Check code with Ruff
+        run: ruff check backend
+
+      - name: Measure complexity with Radon
+        run: radon cc backend -s -a
+
+      - name: Measure maintainability with Radon
+        run: radon mi backend -s
+
+      - name: Run tests
+        run: make test
