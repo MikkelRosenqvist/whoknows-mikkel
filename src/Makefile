@@ -1,4 +1,4 @@
-.PHONY: init run test
+.PHONY: init run test install-dev
 
 init:
 	cd backend && python3 -c "from app import app, init_db; app.app_context().push(); init_db()"
@@ -8,3 +8,6 @@ run:
 
 test:
 	cd backend && python3 -m pytest app_tests.py -v
+
+install-dev:
+	cd backend && python3 -m pip install -r requirements-dev.txt
