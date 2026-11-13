@@ -25,9 +25,17 @@ load_dotenv()
 app = Flask(__name__)
 
 app.config["DATABASE_PATH"] = os.environ.get("DATABASE_PATH", "whoknows.db")
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-me-in-production")
 app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
 csrf = CSRFProtect(app)
+secret_key = os.environ.get("SECRET_KEY")
+
+if not secret_key or secret_key in (
+    "change-me-in-production",
+    "change-me-to-a-random-string",
+):
+    raise RuntimeError("A secure SECRET_KEY must be configured")
+
+app.config["SECRET_KEY"] = secret_key
 
 PER_PAGE = 30
 
