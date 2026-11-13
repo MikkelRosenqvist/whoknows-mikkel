@@ -13,6 +13,7 @@ from flask import (
     session,
     url_for,
 )
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv()
@@ -26,6 +27,7 @@ app = Flask(__name__)
 app.config["DATABASE_PATH"] = os.environ.get("DATABASE_PATH", "whoknows.db")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-me-in-production")
 app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+csrf = CSRFProtect(app)
 
 PER_PAGE = 30
 
@@ -200,7 +202,7 @@ def api_register():
     return render_template("register.html", error=error)
 
 
-@app.route("/api/logout")
+@app.route("/api/logout", methods=["POST"])
 def logout():
     """Logs the user out."""
     flash("You were logged out")
