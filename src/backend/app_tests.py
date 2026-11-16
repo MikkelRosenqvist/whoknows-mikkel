@@ -173,7 +173,15 @@ class WhoKnowsTestCase(unittest.TestCase):
             )
             self.assertIsNotNone(user_after)
 
+    def test_search_explains_empty_index(self):
+        """Search page must explain when no pages are indexed."""
+        response = self.client.get("/?q=python")
 
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            b"No pages have been indexed yet.",
+            response.data,
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,16 @@
   <button id="search-button" onclick="makeSearchRequest()">Search</button>
 </div>
 
+{% if index_empty %}
+  <p id="empty-index-message">
+    No pages have been indexed yet. Search is currently unavailable.
+  </p>
+{% elif query and not search_results %}
+  <p id="no-results-message">
+    No results found for "{{ query }}".
+  </p>
+{% endif %}
+
 <div id="results">
   {% for result in search_results %}
   <div>
