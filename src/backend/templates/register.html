@@ -4,7 +4,7 @@
   <h2>Sign Up</h2>
   {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
   <form action="/api/register" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">   
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <dl>
       <dt><label for="register-username">Username:</label></dt>
       <dd><input id="register-username" type="text" name="username" size="30" value="{{ request.form.username }}"></dd>
