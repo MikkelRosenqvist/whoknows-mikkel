@@ -1,5 +1,7 @@
+import logging
 import os
 import sqlite3
+import time
 
 from dotenv import load_dotenv
 from flask import (
@@ -24,9 +26,16 @@ load_dotenv()
 
 app = Flask(__name__)
 
+app.logger.setLevel(logging.INFO)
 app.config["DATABASE_PATH"] = os.environ.get("DATABASE_PATH", "whoknows.db")
 app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+
+@app.before_request
+def start_request_timer():
+    """Start timing before CSRF validation."""
+    g.request_started_at = time.perf_counter()
 csrf = CSRFProtect(app)
+
 secret_key = os.environ.get("SECRET_KEY")
 
 if not secret_key or secret_key in (
@@ -81,6 +90,25 @@ def before_request():
         g.user = query_db("SELECT * FROM users WHERE id = ?", (session["user_id"],), one=True)
 
 
+@app.after_request
+def log_request(response):
+    """Record request status, duration and response size."""
+    duration_ms = (
+        time.perf_counter() - g.request_started_at
+    ) * 1000
+
+    app.logger.info(
+        "HTTP method=%s path=%s status=%s duration_ms=%.2f bytes=%s",
+        request.method,
+        request.path,
+        response.status_code,
+        duration_ms,
+        response.calculate_content_length(),
+    )
+
+    return response
+
+
 @app.teardown_appcontext
 def close_db(exception):
     """Closes the database connection at the end of the request."""
@@ -93,11 +121,17 @@ def close_db(exception):
 # Page Routes
 ################################################################################
 
+
 @app.route("/")
 def search():
     """Shows the search page."""
     q = request.args.get("q", None)
     language = request.args.get("language", "en")
+
+    index_empty = query_db(
+        "SELECT 1 FROM pages LIMIT 1",
+        one=True,
+    ) is None
 
     if not q:
         search_results = []
@@ -107,7 +141,20 @@ def search():
             (language, f"%{q}%"),
         )
 
-    return render_template("search.html", search_results=search_results, query=q)
+    if q:
+        app.logger.info(
+            "Search results=%d index_empty=%s",
+            len(search_results),
+            index_empty,
+        )
+
+    return render_template(
+        "search.html",
+        search_results=search_results,
+        query=q,
+        index_empty=index_empty,
+    )
+
 
 
 @app.route("/about")
