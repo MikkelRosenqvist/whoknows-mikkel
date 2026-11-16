@@ -12,7 +12,12 @@
   <nav>
     <h1><a id="nav-logo" href="{{ url_for('search') }}">¿Who Knows?</a></h1>
     {% if g.user %}
-    <a id="nav-logout" href="{{ url_for('logout') }}">Log out [{{ g.user.username }}]</a>
+    <form action="{{ url_for('logout') }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" id="nav-logout">
+        Log out [{{ g.user.username }}]
+    </button>
+</form>
     {% else %}
     <a id="nav-login" href="{{ url_for('login') }}">Log in</a>
     <a id="nav-register" href="{{ url_for('register') }}">Register</a>

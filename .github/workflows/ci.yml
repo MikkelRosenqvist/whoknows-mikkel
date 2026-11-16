@@ -27,6 +27,10 @@ jobs:
         with:
           python-version: '3.14'
 
+      - name: Generate temporary SECRET_KEY for CI
+        run: |
+          python -c "import secrets; print('SECRET_KEY=' + secrets.token_hex(32))" >> "$GITHUB_ENV"
+
       - name: Install dependencies
         run: make install-dev
 
