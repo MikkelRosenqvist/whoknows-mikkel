@@ -4,16 +4,19 @@
   <h2>Sign Up</h2>
   {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
   <form action="/api/register" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">   
     <dl>
-      <dt>Username:
-      <dd><input type="text" name="username" size="30" value="{{ request.form.username }}">
-      <dt>E-Mail:
-      <dd><input type="text" name="email" size="30" value="{{ request.form.email }}">
-      <dt>Password:
-      <dd><input type="password" name="password" size="30">
-      <dt>Password <small>(repeat)</small>:
-      <dd><input type="password" name="password2" size="30">
+      <dt><label for="register-username">Username:</label></dt>
+      <dd><input id="register-username" type="text" name="username" size="30" value="{{ request.form.username }}"></dd>
+
+      <dt><label for="register-email">E-Mail:</label></dt>
+      <dd><input id="register-email" type="text" name="email" size="30" value="{{ request.form.email }}"></dd>
+
+      <dt><label for="register-password">Password:</label></dt>
+      <dd><input id="register-password" type="password" name="password" size="30"></dd>
+
+      <dt><label for="register-password2">Password (repeat):</label></dt>
+      <dd><input id="register-password2" type="password" name="password2" size="30"></dd>
     </dl>
     <div class="actions"><input type="submit" value="Sign Up"></div>
   </form>
