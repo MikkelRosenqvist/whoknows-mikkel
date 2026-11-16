@@ -149,6 +149,34 @@ class WhoKnowsTestCase(unittest.TestCase):
         with self.client.session_transaction() as session:
             self.assertIn("user_id", session)
 
+    
+    def test_init_db_preserves_existing_users(self):
+        """Reinitializing the database must preserve users."""
+        self.register("persistent_user", "password123")
+
+        with app.app.app_context():
+            user_before = app.query_db(
+                "SELECT id FROM users WHERE username = ?",
+                ("persistent_user",),
+                one=True,
+            )
+            self.assertIsNotNone(user_before)
+
+        with app.app.app_context():
+            app.init_db()
+
+        with app.app.app_context():
+            user_after = app.query_db(
+                "SELECT id FROM users WHERE username = ?",
+                ("persistent_user",),
+                one=True,
+            )
+            self.assertIsNotNone(user_after)
+
+
 
 if __name__ == "__main__":
     unittest.main()
+
+"""Notes for the tests
+self is used a lot and refers to the actual test object, (WhoKnowsTestCase)"""
